@@ -1,0 +1,159 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.35.2.
+--
+-- see: https://github.com/sol/hpack
+
+name:           AOC2023
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/b1gear5/AOC2023#readme>
+homepage:       https://github.com/b1gear5/AOC2023#readme
+bug-reports:    https://github.com/b1gear5/AOC2023/issues
+author:         Nick Straw
+maintainer:     nick@broxholme.com
+copyright:      N J Straw
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/b1gear5/AOC2023
+
+library
+  exposed-modules:
+      Day1
+      Day10
+      Day11
+      Day12
+      Day13
+      Day14
+      Day15
+      Day16
+      Day17
+      Day18
+      Day19
+      Day2
+      Day20
+      Day21
+      Day22
+      Day23
+      Day24
+      Day25
+      Day3
+      Day4
+      Day5
+      Day6
+      Day7
+      Day8
+      Day9
+      DFS
+      Enumeration
+      HeapIndexed
+      Lib
+      Queue
+      Search
+      Trie
+      Utils
+  other-modules:
+      Paths_AOC2023
+  autogen-modules:
+      Paths_AOC2023
+  hs-source-dirs:
+      src
+  default-extensions:
+      GHC2021
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      MissingH
+    , Useful
+    , array
+    , base >=4.7 && <5
+    , bytestring
+    , bytestring-trie
+    , containers
+    , data-fix
+    , hashable
+    , mtl
+    , parallel
+    , recursion
+    , recursion-schemes
+    , search-algorithms
+    , split
+    , text
+    , timeit
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+executable AOC2023-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_AOC2023
+  autogen-modules:
+      Paths_AOC2023
+  hs-source-dirs:
+      app
+  default-extensions:
+      GHC2021
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      AOC2023
+    , MissingH
+    , Useful
+    , array
+    , base >=4.7 && <5
+    , bytestring
+    , bytestring-trie
+    , containers
+    , data-fix
+    , hashable
+    , mtl
+    , parallel
+    , recursion
+    , recursion-schemes
+    , search-algorithms
+    , split
+    , text
+    , timeit
+    , unordered-containers
+    , vector
+  default-language: Haskell2010
+
+test-suite AOC2023-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_AOC2023
+  autogen-modules:
+      Paths_AOC2023
+  hs-source-dirs:
+      test
+  default-extensions:
+      GHC2021
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      AOC2023
+    , MissingH
+    , Useful
+    , array
+    , base >=4.7 && <5
+    , bytestring
+    , bytestring-trie
+    , containers
+    , data-fix
+    , hashable
+    , mtl
+    , parallel
+    , recursion
+    , recursion-schemes
+    , search-algorithms
+    , split
+    , text
+    , timeit
+    , unordered-containers
+    , vector
+  default-language: Haskell2010

@@ -1,0 +1,79 @@
+name:                AOC2023
+version:             0.1.0.0
+github:              "b1gear5/AOC2023"
+license:             BSD-3-Clause
+author:              "Nick Straw"
+maintainer:          "nick@broxholme.com"
+copyright:           "N J Straw"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/b1gear5/AOC2023#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- timeit
+- MissingH
+- split
+- containers
+- unordered-containers
+- hashable
+- vector
+- recursion-schemes
+- array
+- mtl
+- search-algorithms
+- parallel
+- data-fix
+- recursion
+- Useful
+- bytestring
+- text
+- bytestring-trie
+
+default-extensions: GHC2021
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  AOC2023-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - AOC2023
+
+tests:
+  AOC2023-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - AOC2023
