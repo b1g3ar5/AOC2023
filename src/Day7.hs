@@ -3,7 +3,7 @@ module Day7(day7) where
 import Utils ( sort, group, getLines, first, comparing )
 
 
--- 2 versions so I can have to Ord instances
+-- 2 versions so I can have 2 Ord instances
 newtype Hand1 = H1 [Int] deriving (Eq)
 newtype Hand2 = H2 [Int] deriving (Eq)
 
