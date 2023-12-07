@@ -1,4 +1,4 @@
-# AOC2023
+# Advent of Code 2023
 
-Haskell solutions to the Advent of Code 2023
+Advent of Code 2023 solutions in Haskell
 
