@@ -6,6 +6,7 @@ import Utils ( sort, group, getLines, first, comparing )
 -- 2 versions so I can have 2 Ord instances
 newtype Hand1 = H1 [Int] deriving (Eq)
 newtype Hand2 = H2 [Int] deriving (Eq)
+type Card = Int
 
 
 parseHand :: String -> (Hand1, Int)
@@ -14,7 +15,7 @@ parseHand s = (H1 $ readCard <$> ws!!0, read $ ws!!1)
     ws = words s
 
 
-readCard :: Char -> Int
+readCard :: Char -> Card
 readCard c
   | c=='T' = 10
   | c=='J' = jack
@@ -24,7 +25,7 @@ readCard c
   | otherwise = read [c]
 
 
-jack, joker :: Int
+jack, joker :: Card
 joker = 1
 jack = 11
 
