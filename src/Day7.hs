@@ -54,7 +54,7 @@ rank1 (H1 cs)
 
 rank2 :: Hand2 -> Rank
 rank2 (H2 cs)
-  | js == 5 = Five
+  | jokers == 5 = Five
   | maxSize == 5 = Five
   | maxSize == 4 = Four
   | szs == [2,3] || szs == [2,2] = Full
@@ -63,11 +63,11 @@ rank2 (H2 cs)
   | maxSize == 2 = OneP
   | otherwise = High
   where
-    js = length $ filter (==joker) cs
+    jokers = length $ filter (==joker) cs
     szs :: [Int]
     szs = sort $ (length <$>) <$> group $ sort $ filter (/=joker) cs
     maxSize :: Int
-    maxSize = js + maximum szs
+    maxSize = jokers + maximum szs
 
 
 instance Ord Hand1 where
