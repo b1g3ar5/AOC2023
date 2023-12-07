@@ -9,12 +9,9 @@ type Sym = [(Coord, Char)]
 type Numbers = [(Int, Set Coord)]
 
 
-near :: Coord -> Coord -> Bool
-c `near` d = c `elem` neighbours8 d
-
-
-nears :: Set Coord -> Set Coord -> Bool
-cs `nears` ds = not $ S.null $ cs `intersection` unions (S.map (fromList . neighbours8) ds)
+-- Are any of the coords of the first set next to the second set
+nextTo :: Set Coord -> Set Coord -> Bool
+cs `nextTo` ds = not $ S.null $ cs `intersection` unions (S.map (fromList . neighbours8) ds)
 
 
 isSymbol :: Char -> Bool
@@ -46,7 +43,7 @@ gear nums (symbolCell, symbol)
   | length close == 2 = Just $ product $ fst <$> close
   | otherwise = Nothing
   where
-    close = filter (\(_,cs) -> any (`near` symbolCell) cs) nums
+    close = filter (\(_,cs) -> any (`nextTo8` symbolCell) cs) nums
 
 
 day3 :: IO ()
@@ -54,7 +51,7 @@ day3 = do
   ls <- getLines 3
   let (sym, ns) = parseGrid ls
 
-  putStrLn $ "Day3: part1: " ++ show (sum $ fst <$> filter (\(_, cs) -> cs `nears` fromList (fst <$> sym)) ns)
+  putStrLn $ "Day3: part1: " ++ show (sum $ fst <$> filter (\(_, cs) -> cs `nextTo` fromList (fst <$> sym)) ns)
   putStrLn $ "Day3: part2: " ++ show (sum $ mapMaybe (gear ns) sym )
 
   return ()

@@ -5,6 +5,8 @@ import Text.ParserCombinators.ReadP ( (+++), char, eof, sepBy1 )
 import Control.Monad ( void )
 import TotalMap qualified as T
 
+-- Using ReadP today so that as I try to remember how it works..
+
 data Cube = Blue | Green | Red deriving (Show, Eq, Ord)
 type Grab = T.TMap Cube Int -- The TMap has a default element for missing keys
 type Game = (Int, [Grab])

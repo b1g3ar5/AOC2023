@@ -1,13 +1,13 @@
 module Day4(day4) where
 
-import Utils
+import Utils (getLines)
 import Data.Map (Map)
 import Data.Map qualified as M
 import Data.List (intersect)
 
 
-type Cards2 = Map Int (Int, Card)
 type Card = ([Int], [Int])
+type Cards2 = Map Int (Int, Card)
 
 
 nwinners :: Int

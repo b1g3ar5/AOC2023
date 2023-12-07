@@ -24,6 +24,8 @@ module Utils (
   , neighbours4
   , neighbours6
   , neighbours8
+  , nextTo8
+  , euclidian
   , manhattan
   , manhattan3
   , lt, rt, up, dn
@@ -68,11 +70,12 @@ module Utils (
   , parseS
   , string
   , swap
+  , parseGridWith
 ) where
 
-import Data.Char
+import Data.Char ( ord, isDigit, isSpace, chr )
 import Data.Tuple (swap)
-import Data.List.Split (chunksOf, keepDelimsL)
+import Data.List.Split (chunksOf)
 import Data.Maybe ( fromJust, fromMaybe, isJust, isNothing, catMaybes, mapMaybe )
 import Data.List ( elemIndex, findIndex, group, groupBy, sort, sortBy, sortOn, nub, intercalate, transpose ) 
 import Data.Bifunctor ( Bifunctor(second, bimap, first) )
@@ -80,17 +83,12 @@ import Data.Function ( on )
 import Data.Either ( lefts, rights, fromRight )
 import System.TimeIt ( timeIt )
 import Text.ParserCombinators.ReadP ( ReadP, many1, readP_to_S, satisfy, string, many, sepBy, sepBy1 )
-import Data.Hashable
+import Data.Hashable ( Hashable )
 import Debug.Trace (trace)
-import qualified Data.Sequence as S
-import Data.Sequence (Seq(..), ViewL(..), (><))
 import qualified Data.Set as Set
-import Data.Set (Set)
-import System.IO.Error (alreadyInUseErrorType)
-import Queue (Queue)
 import qualified Queue as Q
-import Data.Foldable
-import Data.Ord
+import Data.Foldable ( Foldable(foldl'), traverse_ )
+import Data.Ord ( comparing )
 
 
 
@@ -239,7 +237,6 @@ neighbourCoords6 = [(1,0,0), (-1,0,0), (0,1,0), (0,-1,0), (0,0,1), (0,0,-1)]
 
 
 neighbourCoords8 :: [Coord]
---neighbourCoords8 = [(x, y) | x <- [-1, 0, 1], y <- [-1, 0, 1], (x, y) /= (0, 0)]
 neighbourCoords8 = [(-1, -1),(0, -1),(1, -1), (1, 0),(1, 1),(0, 1),(-1, 1),(-1, 0)]
 
 
@@ -254,6 +251,9 @@ neighbours8 :: Coord -> [Coord]
 neighbours8 c = neighbourCoords8 `at` c
 
 
+nextTo8 :: Coord -> Coord -> Bool
+nextTo8 p q = p `elem` neighbours8 q
+
 at :: [Coord] -> Coord -> [Coord]
 coords `at` origin = map (+ origin) coords
 
@@ -263,7 +263,7 @@ coords `at3` origin = map (+ origin) coords
 
 -- All coords in a grid in (x, y) (col, row) order
 allCoords :: Int -> Int -> [Coord]
-allCoords rows cols = concat $ (\c -> (c,) <$> [0..(rows-1)]) <$> [0..(cols-1)]
+allCoords rows cols = concatMap (\c -> (c,) <$> [0..(rows-1)]) [0..(cols-1)]
 
 
 directions8 :: [Coord]
@@ -306,6 +306,13 @@ levi 1 0 2 = -1
 levi i j k
   | i==j || i == k || j == k = 0
   | otherwise = error $ "Error in Levi Civita for i,j,k: " ++ show (i,j,k)
+
+
+parseGridWith :: (Char -> a) -> [String] -> [(Coord, a)]
+parseGridWith  p css = sym
+  where
+    sym = concatMap (\(y, cs) -> (\(x, c) -> ((x,y), p c)) <$> zip [0..] cs) $ zip [0..] css
+
 
 -- Basis...
 e :: [Coord3]

@@ -3,16 +3,10 @@ module Day1(day1) where
 
 import Utils
 import Data.Trie qualified as T
---import qualified Data.ByteString.Lazy.Char8 as C
 
 import Data.ByteString qualified as B
---import Data.ByteString.Lazy qualified as BL
 import Data.Text qualified as TS
 import Data.Text.Encoding qualified as TS
---import Data.Text.IO qualified as T
---import Data.Text.Lazy qualified as TL
---import Data.Text.Lazy.Encoding qualified as TL
---import Data.Text.Lazy.IO qualified as TL
 
 
 notDigit :: ReadP String
