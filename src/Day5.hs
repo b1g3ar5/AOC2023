@@ -86,8 +86,8 @@ day5 = do
       seeds2 :: Set R
       seeds2 = S.fromList $ concatMap (\s -> [(s!!0, s!!0 + s!!1)]) $ chunksOf 2 seeds
 
-  timeIt $ putStrLn $ "Day5: part1: " ++ show (minimum $ (\s -> foldl apply s maps) <$> seeds)
-  timeIt $ putStrLn $ "Day5: part2: " ++ show (fst $ S.findMin $ foldl applyR seeds2 maps)
+  putStrLn $ "Day5: part1: " ++ show (minimum $ (\s -> foldl apply s maps) <$> seeds)
+  putStrLn $ "Day5: part2: " ++ show (fst $ S.findMin $ foldl applyR seeds2 maps)
 
   return ()
 

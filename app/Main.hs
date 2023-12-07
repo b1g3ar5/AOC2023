@@ -1,9 +1,10 @@
 module Main (main) where
 
 import Lib (libMain)
+import Utils
 
 main :: IO ()
-main = libMain
+main = timeIt libMain
 
 
 makeFiles :: IO ()

@@ -4,9 +4,9 @@ import Utils ( sort, group, getLines, first, comparing )
 
 
 -- 2 versions so I can have 2 Ord instances
-newtype Hand1 = H1 [Int] deriving (Eq)
-newtype Hand2 = H2 [Int] deriving (Eq)
 type Card = Int
+newtype Hand1 = H1 [Card] deriving (Eq)
+newtype Hand2 = H2 [Card] deriving (Eq)
 
 
 parseHand :: String -> (Hand1, Int)
@@ -71,6 +71,7 @@ rank2 (H2 cs)
     maxSize = jokers + maximum szs
 
 
+-- The standard Ord on lists of Ints will work for the tiebreaker
 instance Ord Hand1 where
   compare :: Hand1 -> Hand1 -> Ordering
   compare = comparing (\h@(H1 cs) -> (rank1 h, cs)) 
@@ -86,6 +87,7 @@ day7 = do
   ls <- getLines 7
   let g1 = parseHand <$> ls
 
+  -- Now just sort on the parsed hands will put them in the right order
   putStrLn $ "Day7: part1: " ++ show (sum $ (\((_,s), r) -> s*r) <$> zip (sort g1) [1..])
   putStrLn $ "Day7: part2: " ++ show (sum $ (\((_,s), r) -> s*r) <$> zip (sort $ first convert <$> g1) [1..])
 

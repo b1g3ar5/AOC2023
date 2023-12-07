@@ -1,9 +1,13 @@
 module Day6(day6) where
 
 
-score :: (Int, Int) -> Int
-score (t, d) = length $ filter (> d) $ (\s -> s*(t-s)) <$> [0..t]
+--scoreSlow :: (Int, Int) -> Int
+--scoreSlow (t, d) = length $ filter (> d) $ (\s -> s*(t-s)) <$> [0..t]
 
+score :: (Int, Int) -> Int
+score (t,d) = t - 2*x + 1
+  where
+    x = binarySearch  (\y -> y * (t-y) > d) 1 (t `div` 2)
 
 day6 :: IO ()
 day6 = do
@@ -14,3 +18,14 @@ day6 = do
   putStrLn $ "Day6: part2: " ++ show (score g2)
 
   return ()
+
+
+binarySearch :: Integral t => (t -> Bool) -> t -> t -> t
+binarySearch p = go
+  where
+    go lo hi
+      | lo + 1 == hi = hi
+      | p mid = go lo mid
+      | otherwise = go mid hi
+      where
+        mid = (lo + hi) `div` 2

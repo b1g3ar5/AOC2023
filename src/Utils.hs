@@ -169,6 +169,17 @@ pInt = do
 ------------------ VARIOUS UTILITY FUNCTIONS --------------------
 
 
+binSearch :: Integral t => (t -> Bool) -> t -> t -> t
+binSearch p = go
+  where
+    go lo hi
+      | lo + 1 == hi = hi
+      | p mid = go lo mid
+      | otherwise = go mid hi
+      where
+        mid = (lo + hi) `div` 2
+
+
 steadyState :: Eq a => (a -> a) -> a -> a
 steadyState f x = if f x == x then x else steadyState f (f x)
 
@@ -189,11 +200,15 @@ type Coord3 = (Int, Int, Int)
 instance {-# OVERLAPPING #-} Hashable Coord where
 
 instance Num Coord where
+  {-# INLINE (+) #-}
+  (+), (-), (*) :: Coord -> Coord -> Coord
   (x1, y1) + (x2, y2) = (x1+x2, y1+y2)
   (x1, y1) - (x2, y2) = (x1-x2, y1-y2)
   (x1, y1) * (x2, y2) = (x1*x2, y1*y2)
+  abs, signum :: Coord -> Coord
   abs (x, y) = (abs x, abs y)
   signum (x, y) = (signum x, signum y)
+  fromInteger :: Integer -> Coord
   fromInteger i = (fromInteger i, 0)
 
 
@@ -247,13 +262,15 @@ neighbours6 :: Coord3 -> [Coord3]
 neighbours6 c = neighbourCoords6 `at3` c
 
 
+{-# INLINE neighbours8 #-}
 neighbours8 :: Coord -> [Coord]
 neighbours8 c = neighbourCoords8 `at` c
 
-
+{-# INLINE nextTo8 #-}
 nextTo8 :: Coord -> Coord -> Bool
 nextTo8 p q = p `elem` neighbours8 q
 
+{-# INLINE at #-}
 at :: [Coord] -> Coord -> [Coord]
 coords `at` origin = map (+ origin) coords
 

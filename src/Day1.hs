@@ -42,7 +42,7 @@ day1 :: IO ()
 day1 = do
   ls <- getLines 1
 
-  timeIt $ putStrLn $ "Day1: part1: " ++ show (sum $ fst . last . parseS parse1 <$> ls)
-  timeIt $ putStrLn $ "Day1: part1: " ++ show (sum $ parse2 . TS.encodeUtf8 . TS.pack <$> ls)
+  putStrLn $ "Day1: part1: " ++ show (sum $ fst . last . parseS parse1 <$> ls)
+  putStrLn $ "Day1: part2: " ++ show (sum $ parse2 . TS.encodeUtf8 . TS.pack <$> ls)
 
   return ()
