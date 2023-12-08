@@ -4,11 +4,11 @@ Advent of Code 2023 solutions in Haskell
 
 This is a stack project, so you can probably compile and run using:
 
-   stack build
+    stack build
 
 and:
 
-   stack run -- AOC2023-exe
+    stack run -- AOC2023-exe
 
 
 However, I would recommend usign ghcup. I call it using:
