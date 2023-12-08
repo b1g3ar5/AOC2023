@@ -39,9 +39,11 @@ run n' finish route mp = go n' 0 0
 {-
 
 I did LCM without checking - but it worked.
-After the fact I chekcked that it takes twice as many steps to get to the second Z:
 
-run 2 ((=='Z') . last) route tree "**Z" == 2 * (run 2 ((=='Z') . last) route tree "**Z")
+After the fact I chekcked that it takes the same time to get from the Z to the Z
+as it does to get from the A to the Z, ie.
+
+run 2 ((=='Z') . last) route tree "**Z" == run 1 ((=='Z') . last) route tree "**A"
 
 -}
 
