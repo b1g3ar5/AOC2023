@@ -1,6 +1,6 @@
 module Day8(day8) where
 
-import Utils ( swap, sort, getLines )
+import Utils (sort, getLines)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as M
 
@@ -21,15 +21,16 @@ parseNode s = (ws!!0, (init $ tail $ ws!!2, take 3 $ ws!!3))
     ws = words s
 
 
-run :: (String -> Bool) -> String -> T -> NodeData -> Int
-run finish route mp = go 0 0
+run :: Int -> (String -> Bool) -> String -> T -> NodeData -> Int
+run n' finish route mp = go n' 0 0
   where
     len = length route
-    go :: Int -> Int -> NodeData -> Int
-    go steps ix pos
-      | finish pos = steps
-      | route!!ix == 'R' = go (steps+1) nextix $ snd nxt
-      | otherwise = go (steps+1) nextix $ fst nxt
+    go :: Int -> Int -> Int -> NodeData -> Int
+    go n steps ix pos
+      | n == 0 = steps-1 
+      | finish pos = go (n-1) (steps+1) nextix $ snd nxt
+      | route!!ix == 'R' = go n (steps+1) nextix $ snd nxt
+      | otherwise = go n (steps+1) nextix $ fst nxt
       where
         nxt = mp M.! pos
         nextix = (ix + 1) `mod` len
@@ -38,13 +39,9 @@ run finish route mp = go 0 0
 {-
 
 I did LCM without checking - but it worked.
-The justification is 
+After the fact I chekcked that it takes twice as many steps to get to the second Z:
 
-  1. The Z nodes are the A nodes with the sub nodes swapped over
-  2. The number of steps to get to the z nodes are all a multiple of the route length
-  3. The number of steps to get to the nodes are all ODD
-
-So when we get to the Z nodes it is just the same as being at the A nodes
+run 2 ((=='Z') . last) route tree "**Z" == 2 * (run 2 ((=='Z') . last) route tree "**Z")
 
 -}
 
@@ -55,18 +52,13 @@ day8 = do
   let (route, tree) = parse ls
       as :: [NodeData]
       as = filter ((== 'A') . last) $ M.keys tree
-      --zs = filter ((== 'Z') . last) (M.keys tree)
-      --at = sort $ (tree M.!) <$> as
-      --zt = sort $ swap . (tree M.!) <$> zs
-      steps = run ((=='Z') . last) route tree <$> as
+      zs = filter ((== 'Z') . last) $ M.keys tree
+      stepsA = run 1 ((=='Z') . last) route tree <$> as
+      stepsZ = run 2 ((=='Z') . last) route tree <$> zs
 
-  putStrLn $ "Day8: part1: " ++ show (run (=="ZZZ") route tree "AAA")
-  --putStrLn $ "Day8: part1: " ++ show (run ((=='Z') . last) route tree "AAA")
-  --putStrLn $ "Day8: part1: " ++ show (run ((=='Z') . last) route tree "VSD")
-  --putStrLn $ "Day8: part1: " ++ show (run ((=='Z') . last) route tree "TFQ")
-  --putStrLn $ "Day8: part2: " ++ show (product ((`div` length route) <$> steps) * length route)
-  --putStrLn $ "Day8: part2: " ++ show (steps)
-  putStrLn $ "Day8: part2: " ++ show (foldl1 lcm steps)
+  putStrLn $ "Day8: part1: " ++ show (run 1 (=="ZZZ") route tree "AAA")
+  putStrLn $ "Day8: Is LCM valid: " ++ show (sort stepsA == sort stepsZ)
+  putStrLn $ "Day8: part2: " ++ show (foldl1 lcm stepsA)
 
   return ()
 
