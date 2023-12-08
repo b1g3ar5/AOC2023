@@ -2,6 +2,8 @@
 
 Advent of Code 2023 solutions in Haskell
 
+# Installation
+
 This is a stack project, so you can probably compile and run using:
 
     stack build
@@ -19,7 +21,7 @@ and then install all the required versions...
 
 
 
-## For profiling...
+## Profiling
 
 stack build --profile
 
