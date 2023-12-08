@@ -37,20 +37,15 @@ run n' finish route mp = go n' 0 0
 
 
 {-
+    I did LCM without checking, but after the fact I chekcked that it takes the same time
+    to get from the Z to the Z as it does to get from the A to the Z, ie.
 
-I did LCM without checking - but it worked.
-
-After the fact I chekcked that it takes the same time to get from the Z to the Z
-as it does to get from the A to the Z, ie.
-
-run 2 ((=='Z') . last) route tree "**Z" == run 1 ((=='Z') . last) route tree "**A"
-
+        run 2 ((=='Z') . last) route tree "**Z" == run 1 ((=='Z') . last) route tree "**A"
 -}
 
 day8 :: IO ()
 day8 = do
   ls <- getLines 8
-  --let ls = test2
   let (route, tree) = parse ls
       as :: [NodeData]
       as = filter ((== 'A') . last) $ M.keys tree
