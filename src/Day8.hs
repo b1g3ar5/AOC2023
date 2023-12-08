@@ -1,13 +1,18 @@
 module Day8(day8) where
 
-import Utils (sort, getLines)
-import Data.Map.Strict (Map)
-import Data.Map.Strict qualified as M
+import Utils (sort, getLines, fromJust)
+import Data.Trie as M ( keys, lookup, fromList, Trie )
+import Data.ByteString qualified as B
+import qualified Data.Bits.Utils as BS
 
 
-type NodeData = String
-type T = Map NodeData (NodeData, NodeData)
+type NodeData = B.ByteString
 
+--type T = Map NodeData (NodeData, NodeData)
+type T = M.Trie (NodeData, NodeData)
+
+toBS :: String -> B.ByteString
+toBS = B.pack . (BS.c2w8 <$>)
 
 parse :: [String] -> (String, T)
 parse ls = (head ls, M.fromList ns)
@@ -16,12 +21,12 @@ parse ls = (head ls, M.fromList ns)
 
 
 parseNode :: String -> (NodeData, (NodeData, NodeData))
-parseNode s = (ws!!0, (init $ tail $ ws!!2, take 3 $ ws!!3))
+parseNode s = (toBS $ ws!!0, (toBS $ init $ tail $ ws!!2, toBS $ take 3 $ ws!!3))
   where
     ws = words s
 
 
-run :: Int -> (String -> Bool) -> String -> T -> NodeData -> Int
+run :: Int -> (B.ByteString -> Bool) -> String -> T -> NodeData -> Int
 run n' finish route mp = go n' 0 0
   where
     len = length route
@@ -32,7 +37,7 @@ run n' finish route mp = go n' 0 0
       | route!!ix == 'R' = go n (steps+1) nextix $ snd nxt
       | otherwise = go n (steps+1) nextix $ fst nxt
       where
-        nxt = mp M.! pos
+        nxt = fromJust $ pos `M.lookup` mp
         nextix = (ix + 1) `mod` len
 
 
@@ -48,13 +53,13 @@ day8 = do
   ls <- getLines 8
   let (route, tree) = parse ls
       as :: [NodeData]
-      as = filter ((== 'A') . last) $ M.keys tree
-      zs = filter ((== 'Z') . last) $ M.keys tree
-      stepsA = run 1 ((=='Z') . last) route tree <$> as
-      stepsZ = run 2 ((=='Z') . last) route tree <$> zs
+      as = filter ((== BS.c2w8 'A') . B.last) $ M.keys tree
+      --zs = filter ((== BS.c2w8 'Z') . B.last) $ M.keys tree
+      stepsA = run 1 ((== BS.c2w8 'Z') . B.last) route tree <$> as
+      --stepsZ = run 2 ((== BS.c2w8 'Z') . B.last) route tree <$> zs
 
-  putStrLn $ "Day8: part1: " ++ show (run 1 (=="ZZZ") route tree "AAA")
-  putStrLn $ "Day8: Is LCM valid: " ++ show (sort stepsA == sort stepsZ)
+  putStrLn $ "Day8: part1: " ++ show (run 1 (== toBS "ZZZ") route tree $ toBS "AAA")
+  --putStrLn $ "Day8: Is LCM valid: " ++ show (sort stepsA == sort stepsZ)
   putStrLn $ "Day8: part2: " ++ show (foldl1 lcm stepsA)
 
   return ()

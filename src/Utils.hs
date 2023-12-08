@@ -91,7 +91,6 @@ import Data.Foldable ( Foldable(foldl'), traverse_ )
 import Data.Ord ( comparing )
 
 
-
 --- Things to add
 
 -- Rectangular grid with focus and distributive, representable instances
