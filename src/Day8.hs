@@ -1,6 +1,6 @@
 module Day8(day8) where
 
-import Utils (sort, getLines, fromJust)
+import Utils (getLines, fromJust)
 import Data.Trie as M ( keys, lookup, fromList, Trie )
 import Data.ByteString qualified as B
 import qualified Data.Bits.Utils as BS
@@ -8,7 +8,6 @@ import qualified Data.Bits.Utils as BS
 
 type NodeData = B.ByteString
 
---type T = Map NodeData (NodeData, NodeData)
 type T = M.Trie (NodeData, NodeData)
 
 toBS :: String -> B.ByteString

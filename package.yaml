@@ -39,6 +39,7 @@ dependencies:
 - bytestring
 - text
 - bytestring-trie
+- async
 
 default-extensions: GHC2021
 
