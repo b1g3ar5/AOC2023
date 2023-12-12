@@ -40,6 +40,7 @@ dependencies:
 - text
 - bytestring-trie
 - async
+- memoize
 
 default-extensions: GHC2021
 

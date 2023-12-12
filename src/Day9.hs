@@ -13,7 +13,7 @@ day9 = do
   let g :: [[Int]]
       g = (read <$>) . words <$> ls
 
-  putStrLn $ "Day9: part2: " ++ show (sum $ extrap <$> g)
+  putStrLn $ "Day9: part1: " ++ show (sum $ extrap <$> g)
   putStrLn $ "Day9: part2: " ++ show (sum $ extrap . reverse <$> g)
 
   return ()

@@ -71,11 +71,16 @@ module Utils (
   , string
   , swap
   , parseGridWith
+  , wordsBy
+  , ana
+  , cata
+  , hylo
+  , Fix(..)
 ) where
 
 import Data.Char ( ord, isDigit, isSpace, chr )
 import Data.Tuple (swap)
-import Data.List.Split (chunksOf)
+import Data.List.Split (chunksOf, wordsBy)
 import Data.Maybe ( fromJust, fromMaybe, isJust, isNothing, catMaybes, mapMaybe )
 import Data.List ( elemIndex, findIndex, group, groupBy, sort, sortBy, sortOn, nub, intercalate, transpose ) 
 import Data.Bifunctor ( Bifunctor(second, bimap, first) )
@@ -371,4 +376,28 @@ dfs next start = loop Set.empty (Q.fromList start)
                     | x `Set.member` seen -> loop seen newq
                     | otherwise -> x : loop (x `Set.insert` seen) (foldl' (\q x -> Q.cons x q) newq (next x))
 
+
+-- RECURSION STUFF ---
+
+-- Recursion library
+newtype Fix f = Fix { unFix :: f (Fix f) }
+type Coalgebra f a = a -> f a
+type Algebra f a = f a -> a
+
+ana :: Functor f => Coalgebra f a -> a -> Fix f
+ana coalg = Fix . fmap (ana coalg) . coalg
+
+cata :: Functor f => Algebra f a -> Fix f -> a
+cata alg = alg . fmap (cata alg) . unFix
+
+hylo :: Functor f => Algebra f a -> Coalgebra f b -> b -> a
+hylo f g = f . fmap (hylo f g) . g
+
+
+-- Functor that generates the rose tree
+data TreeF a = NodeF String [a]
+  deriving (Functor, Show)
+
+-- Rose tree
+type Tree = Fix TreeF
 

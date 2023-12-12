@@ -2,7 +2,6 @@ module Day11(day11) where
 
 import Data.List ((\\))
 import Data.Maybe (catMaybes)
-import Data.Set qualified as S
 
 
 type Coord = (Int, Int)

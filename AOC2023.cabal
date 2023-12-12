@@ -54,6 +54,7 @@ library
       Enumeration
       HeapIndexed
       Lib
+      Memo
       Queue
       Search
       Trie
@@ -78,6 +79,7 @@ library
     , containers
     , data-fix
     , hashable
+    , memoize
     , mtl
     , parallel
     , recursion
@@ -113,6 +115,7 @@ executable AOC2023-exe
     , containers
     , data-fix
     , hashable
+    , memoize
     , mtl
     , parallel
     , recursion
@@ -149,6 +152,7 @@ test-suite AOC2023-test
     , containers
     , data-fix
     , hashable
+    , memoize
     , mtl
     , parallel
     , recursion
