@@ -26,6 +26,9 @@ count1 cfg@(c:cs) (s:ss)
   | otherwise = 0
 
 
+toI :: (String, [Int]) -> Integer
+toI (springs, scores) = undefined
+
 rcount1 :: (String -> [Int] -> Int) -> String -> [Int] -> Int
 rcount1 f [] [] = 1
 rcount1 f [] _  = 0
@@ -72,6 +75,8 @@ day12 = do
   putStrLn $ "Day12: part2: " ++ show (sum $ fst . uncurry (count2 M.empty) <$> g2)
   --putStrLn $ "Day12: part1: " ++ show (sum $ uncurry memoCount1 <$> g1) 
   --putStrLn $ "Day12: part1: " ++ show (sum $ uncurry memoCount1 <$> g2) 
+  putStrLn $ "Day12: part1: " ++ show (maximum $ maximum . snd <$> g2) 
+  putStrLn $ "Day12: part1: " ++ show (maximum $ length . snd <$> g2) 
   return ()
 
 
