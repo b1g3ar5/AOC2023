@@ -3,6 +3,7 @@
 
 module Utils (
   getLines
+  , wordsWhen
   , splitOn
   , clockTurn
   , antiTurn
@@ -132,6 +133,8 @@ getTest = getT lines
 
 
 -- splits a list on an item and deletes the item
+
+{-# INLINABLE splitOn #-}
 splitOn :: Eq a => a -> [a] -> [[a]]
 splitOn s = go [] []
   where
@@ -139,6 +142,14 @@ splitOn s = go [] []
     go acc next (l:ls)
       | l == s = go (acc ++ [next]) [] ls
       | otherwise = go acc (next ++ [l]) ls
+
+
+
+wordsWhen     :: (a -> Bool) -> [a] -> [[a]]
+wordsWhen p s =  case dropWhile p s of
+                      [] -> []
+                      s' -> w : wordsWhen p s''
+                            where (w, s'') = break p s'
 
 
 splitWhen :: (a -> Bool) -> [a] -> [[a]]

@@ -1,14 +1,15 @@
 module Day14(day14) where
 
-import Utils (intercalate, sort, transpose, getLines, splitOn)
+import Utils (intercalate, sort, transpose, getLines)
 import Data.Map qualified as M
+import Data.List.Split qualified as S
 
 
 tiltRt, tiltLt, tiltUp, tiltDn :: [String] -> [String]
 tiltRt ls  = go <$> ls
   where
     go :: String -> String
-    go s = intercalate "#" $ sort <$> splitOn '#' s
+    go s = intercalate "#" $ sort <$> S.splitOn "#" s
 tiltDn = transpose . tiltRt . transpose
 tiltLt = (reverse <$>). tiltRt . (reverse <$>)
 tiltUp = reverse . tiltDn . reverse
@@ -48,4 +49,6 @@ day14 = do
   putStrLn $ "Day14: part2: " ++ show (run 1000000000 ls)
 
   return ()
+
+
 
