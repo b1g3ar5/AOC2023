@@ -55,6 +55,7 @@ library
       HeapIndexed
       Lib
       Memo
+      Memo2
       Queue
       Search
       Trie

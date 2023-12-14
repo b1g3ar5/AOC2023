@@ -1,22 +1,6 @@
 -- {-# LANGUAGE BangPatterns #-}
 
-module Memo (
-  memoise
-  , memoise'
-  --, memo
-  --, memoFix
-  , Tree(..)
-  , index
-  , index'
-  , nats
-  , rindex
-  , fromInt
-  , pad
-  , toInt
-  , finiteNats
-  , memoMain
-  , simpleMemoise
-) where
+module Memo where
 
 import System.TimeIt
 --import Data.MemoTrie

@@ -3,7 +3,10 @@ module Day12(day12) where
 import Utils (intercalate, getLines, wordsBy, bimap)
 import Data.Map (Map)
 import Data.Map qualified as M
-import Data.Function.Memoize
+import Data.Function (fix)
+import Memo2 qualified as M2
+import Numeric.Natural
+
 
 parse1 :: String -> (String, [Int])
 parse1 s = (ws!!0, read <$> wordsBy (==',') (ws!!1))
@@ -15,36 +18,50 @@ parse2 :: String -> (String, [Int])
 parse2 s = bimap (intercalate "?" . replicate 5) (concat . replicate 5) $ parse1 s
 
 
-count1 :: String -> [Int] -> Int
-count1 [] [] = 1
-count1 [] _  = 0
-count1 cfg [] = if '#' `elem` cfg then 0 else 1
-count1 cfg@(c:cs) (s:ss)
-  | c == '.' = count1 cs (s:ss)
-  | c == '#' && (s <= length cfg) && ('.' `notElem` take s cfg) && (s == length cfg || cfg!!s /= '#' ) = count1 (drop (s+1) cfg) ss
-  | c == '?' = count1 ('.':cs) (s:ss ) + count1 ('#':cs) (s:ss)
+countF :: ((String, [Int]) -> Int) -> (String, [Int]) -> Int
+countF _ ([], []) = 1
+countF _ ([], _)  = 0
+countF _ (cfg, []) = if '#' `elem` cfg then 0 else 1
+countF recurFn (cfg@(c:cs), s:ss)
+  | c == '.' = recurFn (cs, s:ss)
+  | c == '#' && (s <= length cfg) && ('.' `notElem` take s cfg) && (s == length cfg || cfg!!s /= '#' ) = recurFn (drop (s+1) cfg, ss)
+  | c == '?' = recurFn ('.':cs, s:ss ) + recurFn ('#':cs, s:ss)
   | otherwise = 0
 
 
-toI :: (String, [Int]) -> Integer
-toI (springs, scores) = undefined
-
-rcount1 :: (String -> [Int] -> Int) -> String -> [Int] -> Int
-rcount1 f [] [] = 1
-rcount1 f [] _  = 0
-rcount1 f cfg [] = if '#' `elem` cfg then 0 else 1
-rcount1 f cfg@(c:cs) (s:ss)
-  | c == '.' = rcount1 f cs (s:ss)
-  | c == '#' && (s <= length cfg) && ('.' `notElem` take s cfg) && (s == length cfg || cfg!!s /= '#' ) = rcount1 f (drop (s+1) cfg) ss
-  | c == '?' = rcount1 f ('.':cs) (s:ss ) + rcount1 f ('#':cs) (s:ss)
-  | otherwise = 0
+count :: (String, [Int]) -> Int
+count = fix countF
 
 
-memoCount1 = memoFix2 rcount1
+encodeSI :: (String, [Int]) -> Natural
+encodeSI = undefined
+decodeSI :: Natural -> (String, [Int])
+decodeSI = undefined
+
+
+countED :: (Natural -> Int) -> (Natural -> Int)
+countED f = f . encodeSI . decodeSI
+
+
+
+--countTree :: (String, [Int]) -> Int
+countTree = M2.memoize @M2.Tree countED
+
+
+fibOp :: (Natural -> Integer) -> (Natural -> Integer)
+fibOp v 0 = 0
+fibOp v 1 = 1
+fibOp v n = v (n-1) + v (n-2)
+
+
+fibTree :: Natural -> Integer
+fibTree = M2.memoize @M2.Tree fibOp
+
 
 
 type Cache = Map (String, [Int]) Int
 
+-- Self memoed
 count2 :: Cache -> String -> [Int] -> (Int, Cache)
 count2 seen [] [] = (1, seen)
 count2 seen [] _  = (0, seen)
@@ -71,56 +88,8 @@ day12 = do
   let g1 = parse1 <$> ls
       g2 = parse2 <$> ls
 
-  putStrLn $ "Day12: part1: " ++ show (sum $ uncurry count1 <$> g1) 
+  putStrLn $ "Day12: part1: " ++ show (sum $ count <$> g1) 
   putStrLn $ "Day12: part2: " ++ show (sum $ fst . uncurry (count2 M.empty) <$> g2)
-  --putStrLn $ "Day12: part1: " ++ show (sum $ uncurry memoCount1 <$> g1) 
-  --putStrLn $ "Day12: part1: " ++ show (sum $ uncurry memoCount1 <$> g2) 
-  putStrLn $ "Day12: part1: " ++ show (maximum $ maximum . snd <$> g2) 
-  putStrLn $ "Day12: part1: " ++ show (maximum $ length . snd <$> g2) 
+
+
   return ()
-
-
-
-data Tree a = Tree (Tree a) a (Tree a)
-
-instance Functor Tree where
-    fmap :: (a -> b) -> Tree a -> Tree b
-    fmap f (Tree l m r) = Tree (fmap f l) (f m) (fmap f r)
-
-
--- Function to memoise
-testF :: (Integer -> Integer) -> Integer -> Integer
-testF _ 0 = 0
-testF mf n = max n $ mf (n `div` 2) +
-                 mf (n `div` 3) +
-                 mf (n `div` 4)
-
-
--- Tree of the answers
-fTree :: Tree Integer
-fTree = fmap (testF fastestF) nats
-
-
--- Fast version of testF
-fastestF :: Integer -> Integer
-fastestF = index fTree
-
-
-
-nats :: Tree Integer
-nats = go 0 1
-  where
-    go !n !s = Tree (go l s') n (go r s')
-        where
-          l = n + s
-          r = l + s
-          s' = s * 2
-
-
-index :: Tree a -> Integer -> a
-index (Tree _ m _) 0 = m
-index (Tree l _ r) n = case (n - 1) `divMod` 2 of
-    (q,0) -> index l q
-    (q,1) -> index r q
-
-
