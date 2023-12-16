@@ -42,6 +42,7 @@ dependencies:
 - async
 - memoize
 - binary
+- parallel
 
 default-extensions: GHC2021
 

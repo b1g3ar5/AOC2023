@@ -4,10 +4,20 @@ Advent of Code 2023 solutions in Haskell
 
 Day12 takes 1.3s - it's a memoisation
 Day14 takes 2.3s - but the code is pretty neat. All the time is in splitOn() from the Data.List.Split library
-Day16 takes 3.4s - a lot of routes through the grid and I can't think of a further easy optimisation...
+Day16 takes 3.4s - a lot of routes through the grid and I can't think of a further easy optimisation other than parallelisation...
+
+Total 8s as of Day 16
 
 
-Total 10s as of Day 16
+I tried parallelisation on Day16 but the time increased with 
+
+    parMap rpar (run g) setOff
+
+But it seems to run more quickly - I don't think timeIt works with rpar?
+
+More work on paralleisation required...
+
+
 
 ### Installation
 

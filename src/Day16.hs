@@ -1,13 +1,12 @@
 module Day16(day16) where
 
 
-import Utils (dn, getLines, lt, rt, up, Coord)
+import Utils (dn, getLines, lt, rt, up, Coord, timeIt)
 import Data.Map (Map)
 import Data.Map qualified as M
-import Data.Sequence (Seq)
-import Data.Sequence qualified as S
 import Data.Set (Set)
-import Data.Set qualified as SS
+import Data.Set qualified as S
+import Control.Parallel.Strategies
 
 
 data Cell = H | V | B | F | E deriving (Eq, Show)
@@ -39,13 +38,13 @@ reflection (d, E) = [d]
 
 
 run :: (Map Coord Cell, Int, Int) -> (Coord, Direction) -> Set (Coord, Direction)
-run (g, mx, my) (p,d) = go SS.empty (p, d)
+run (g, mx, my) (p,d) = go S.empty (p, d)
   where
     go :: Set (Coord, Direction) -> (Coord, Direction) -> Set (Coord, Direction)
     go acc (pos, dir)
-      | (pos, dir) `SS.member` acc = acc
+      | (pos, dir) `S.member` acc = acc
       | not (inBounds pos mx my) = acc
-      | otherwise = foldl (go . SS.insert (pos, dir)) acc $ zip newCoords newDirections
+      | otherwise = foldl (go . S.insert (pos, dir)) acc $ zip newCoords newDirections
       where
         cell = g M.! pos
         newDirections = reflection (dir, cell)
@@ -55,12 +54,11 @@ run (g, mx, my) (p,d) = go SS.empty (p, d)
 size :: Int
 size = 109
 
-
-setOff :: Seq (Coord, Direction)
-setOff = S.fromList $  ((\y -> ((0,y), rt)) <$> [0..size])
-                    ++ ((\y -> ((size,y), lt)) <$> [0..size])
-                    ++ ((\x -> ((x ,0), dn)) <$> [0..size])
-                    ++ ((\x -> ((x,size), up)) <$> [0..size])
+setOff :: [(Coord, Direction)]
+setOff = ((\y -> ((0,y), rt)) <$> [0..size])
+         ++ ((\y -> ((size,y), lt)) <$> [0..size])
+         ++ ((\x -> ((x ,0), dn)) <$> [0..size])
+         ++ ((\x -> ((x,size), up)) <$> [0..size])
 
 
 inBounds :: Coord -> Int -> Int -> Bool
@@ -71,8 +69,11 @@ day16 :: IO ()
 day16 = do
   ss <- getLines 16
   let g = parse ss
+      --xs1 = fmap (run g) setOff
+      xs2 = parMap rpar (run g) setOff
 
-  putStrLn $ "Day16: part1: " ++ show (SS.size $ SS.map fst $ run g ((0,0), rt))
-  putStrLn $ "Day16: part2: " ++ show (maximum $ SS.size . SS.map fst <$> (run g <$> setOff)) 
+  putStrLn $ "Day16: part1: " ++ show (S.size $ S.map fst $ run g ((0,0), rt))
+  --timeIt $ putStrLn $ "Day16: part2: " ++ show (maximum $ S.size . S.map fst <$> xs1) 
+  timeIt $ putStrLn $ "Day16: part2: " ++ show (maximum $ S.size . S.map fst <$> xs2) 
 
   return ()
