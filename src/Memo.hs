@@ -3,11 +3,8 @@
 module Memo where
 
 import System.TimeIt
---import Data.MemoTrie
 import Data.Function (fix)
 import qualified Data.Map.Strict as M
---import Data.Hashable
---import Data.Char
 
 
 -- See https://stackoverflow.com/questions/3208258/memoization-in-haskell
@@ -142,6 +139,7 @@ data Tree a = Tree (Tree a) a (Tree a)
 
 
 instance Functor Tree where
+    fmap :: (a -> b) -> Tree a -> Tree b
     fmap f (Tree l m r) = Tree (fmap f l) (f m) (fmap f r)
 
 
@@ -158,28 +156,33 @@ instance Functor Tree2 where
   fmap f (Tree2 l m r) = Tree2 (fmap f l) (f m) (fmap f r)
 
 
+-- Tree of the answer indexed by the input
 index :: Tree a -> Integer -> a
 index (Tree _ m _) 0 = m
 index (Tree l _ r) n = case (n - 1) `divMod` 2 of
-    (q,0) -> index l q
-    (q,1) -> index r q
+                          (q,0) -> index l q
+                          (q,1) -> index r q
+                          _ -> error "Error in index Memo.hs"
 
 
 index' :: Tree a -> Int -> a
 index' (Tree _ m _) 0 = m
 index' (Tree l _ r) n = case (n - 1) `divMod` 2 of
-    (q,0) -> index' l q
-    (q,1) -> index' r q
+                          (q,0) -> index' l q
+                          (q,1) -> index' r q
+                          _ -> error "Error in index' Memo.hs"
 
 
 index2 :: Tree2 a -> Integer -> a
 index2 (One x) _ = x
 index2 (Two x y) n = case (n - 1) `divMod` 2 of
- (q,0) -> y
- (q,1) -> x
+                      (q,0) -> y
+                      (q,1) -> x
+                      _ -> error "Error in index2 Memo.hs"
 index2 (Tree2 l _ r) n = case (n - 1) `divMod` 2 of
- (q,0) -> index2 l q
- (q,1) -> index2 r q
+                            (q,0) -> index2 l q
+                            (q,1) -> index2 r q
+                            _ -> error "Error in index2 Memo.hs"
 
 
 nats :: Tree Integer

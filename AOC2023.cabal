@@ -75,6 +75,7 @@ library
     , array
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
     , bytestring-trie
     , containers
@@ -111,6 +112,7 @@ executable AOC2023-exe
     , array
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
     , bytestring-trie
     , containers
@@ -148,6 +150,7 @@ test-suite AOC2023-test
     , array
     , async
     , base >=4.7 && <5
+    , binary
     , bytestring
     , bytestring-trie
     , containers

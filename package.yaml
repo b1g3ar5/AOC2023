@@ -41,6 +41,7 @@ dependencies:
 - bytestring-trie
 - async
 - memoize
+- binary
 
 default-extensions: GHC2021
 
