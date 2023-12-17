@@ -43,6 +43,7 @@ dependencies:
 - memoize
 - binary
 - parallel
+- PSQueue
 
 default-extensions: GHC2021
 

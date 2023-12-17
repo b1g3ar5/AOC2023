@@ -23,6 +23,7 @@ module Utils (
   , scale3
   , scale
   , neighbours4
+  , neighbourCoords4
   , neighbours6
   , neighbours8
   , nextTo8

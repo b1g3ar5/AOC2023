@@ -1,51 +1,21 @@
 module Day12(day12) where
 
 import Utils (intercalate, getLines, wordsBy, bimap)
-import Data.List 
+import Data.List (unfoldr)
 import Data.Map (Map)
 import Data.Map qualified as M
 import Data.Function (fix)
-import Memo2 qualified as M2
-import Numeric.Natural ( Natural )
-import Data.ByteString.Lazy qualified as B
-import Data.ByteString.Lazy.Char8 qualified as C
-import qualified Data.Bits.Utils as C
 import Data.Binary qualified as B
 import qualified Data.Bits.Utils as B
-import Data.Text.Encoding (encodeUtf8)
 import Data.Bits ( Bits((.|.), shiftR, shiftL) )
 import Data.Bits.Utils ( c2w8 )
-import Data.Vector.Fusion.Bundle.Monadic (Bundle(sSize))
-import Memo qualified as Memo
-
-
-unroll :: Integer -> [B.Word8]
-unroll = unfoldr step
-  where
-    step 0 = Nothing
-    step i = Just (fromIntegral i, i `shiftR` 8)
-
-
-roll :: [B.Word8] -> Integer
-roll   = foldr unstep 0
-  where
-    unstep b a = a `shiftL` 8 .|. fromIntegral b
-
-
-
-encode :: (String, [Int]) -> Integer
-encode si = roll $ c2w8 <$> showSpring si
-
-
-decode :: Integer -> (String, [Int])
-decode x = parse $ B.w82s $ unroll x
-
+import Memo qualified
 
 
 parse :: String -> (String, [Int])
-parse s 
-  | null ws = ([], []) --error $ "Error in parse: " ++ s
-  | length ws < 2 = (['#'], []) --error $ "Error in parse: " ++ s
+parse s
+  | null ws = ([], [])
+  | length ws < 2 = if head s ==' ' then ("", read <$> wordsBy (==',') (ws `ix` 0)) else (ws `ix` 0, [])
   | otherwise = (ws `ix` 0, read <$> wordsBy (==',') (ws `ix` 1))
   where
     ws = words s
@@ -59,8 +29,8 @@ parse2 s = bimap (intercalate "?" . replicate 5) (concat . replicate 5) $ parse 
 
 
 countF :: ((String, [Int]) -> Int) -> (String, [Int]) -> Int
-countF _ ([], []) = 1
-countF _ ([], _)  = 0
+--countF _ ([], []) = 1
+countF _ ([], ss)  = if null ss then 1 else 0
 countF _ (cfg, []) = if '#' `elem` cfg then 0 else 1
 countF recurFn (cfg@(c:cs), s:ss)
   | c == '.' = recurFn (cs, s:ss)
@@ -74,33 +44,13 @@ ix xs i
   | i>(length xs-1) = error $ "i is too big: " ++ show i
   | otherwise = xs !!i
 
-
-countFI :: (Integer -> Int) -> Integer -> Int
-countFI f i = countF rf $ decode i
-  where
-    rf :: (String, [Int]) -> Int
-    rf si = f (encode si)
-
-
--- Build a tree
-countTree :: Memo.Tree Int
-countTree = fmap (countFI fastCount) Memo.nats
-
-
--- Get the answer from the tree
-fastCount :: Integer -> Int
-fastCount = Memo.index countTree
-
-
-count' :: (String, [Int]) -> Int
-count' ss = fastCount $ encode ss
-
-
 count :: (String, [Int]) -> Int
 count = fix countF
 
-
 type Cache = Map (String, [Int]) Int
+
+cache :: Map (String, [Int]) Int
+cache = M.empty
 
 
 -- Self memoed
@@ -129,30 +79,17 @@ day12 = do
   ls <- getLines 12
   let g1 = parse <$> ls
       g2 = parse2 <$> ls
-      
+
   putStrLn $ "Day12: part1: " ++ show (sum $ count <$> g1) 
   putStrLn $ "Day12: part2: " ++ show (sum $ fst . uncurry (count2 M.empty) <$> g2)
-  --putStrLn $ "Day12: part2: " ++ show (g2!!0)
-  --putStrLn $ "Day12: part2: " ++ show (encode $ g2!!0)
-  --putStrLn $ "Day12: part2: " ++ show (decode $ encode $ g2!!0)
-  putStrLn $ "Day12: part2:count " ++ show (count ("#.??", [1]))
-  putStrLn $ "Day12: part2:count " ++ show (count (".??", [0]))
-  putStrLn $ "Day12: part2:count " ++ show (count ("??", [0]))
-  putStrLn $ "Day12: part2:count' " ++ show (count' ("#.??", [1]))
-  putStrLn $ "Day12: part2:count' " ++ show (count' (".??", [0]))
-  putStrLn $ "Day12: part2:count' " ++ show (count' ("??", [0]))
-  
 
   return ()
 
 
--- fib0
--- fib1 = fib0 with recursion removed
--- fibTree = build tree
 
 {-
 
--- ############# Example #############
+-- ############# GRAVE YARD  #############
 fib0 :: Integer -> Integer
 fib0 0 = 0
 fib0 1 = 1
@@ -176,6 +113,58 @@ fibTree = fmap (fib1 fastestFib) nats
 fastestFib :: Integer -> Integer
 fastestFib = index fibTree
 
+
+
+-}
+
+--import Memo2 qualified as M2
+--import Numeric.Natural ( Natural )
+--import Data.ByteString.Lazy qualified as B
+--import Data.ByteString.Lazy.Char8 qualified as C
+--import qualified Data.Bits.Utils as C
+--import Data.Text.Encoding (encodeUtf8)
+
+{-
+unroll :: Integer -> [B.Word8]
+unroll = unfoldr step
+  where
+    step 0 = Nothing
+    step i = Just (fromIntegral i, i `shiftR` 8)
+
+
+roll :: [B.Word8] -> Integer
+roll   = foldr unstep 0
+  where
+    unstep b a = a `shiftL` 8 .|. fromIntegral b
+
+
+
+encode :: (String, [Int]) -> Integer
+encode si = roll $ c2w8 <$> showSpring si
+
+
+decode :: Integer -> (String, [Int])
+decode x = parse $ B.w82s $ unroll x
+
+countFI :: (Integer -> Int) -> Integer -> Int
+countFI f i = countF rf $ decode i
+  where
+    rf :: (String, [Int]) -> Int
+    rf si = f (encode si)
+
+
+-- Build a tree
+countTree :: Memo.Tree Int
+countTree = fmap (countFI fastCount) Memo.nats
+
+
+-- Get the answer from the tree
+fastCount :: Integer -> Int
+fastCount = Memo.index countTree
+
+
+count' :: (String, [Int]) -> Int
+count' ss = fastCount $ encode ss
 
 
 -}

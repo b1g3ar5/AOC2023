@@ -6,9 +6,9 @@ import Data.Foldable (Foldable(foldl'))
 data Heap k a = EmptyHeap | Heap k [a] (Heap k a) (Heap k a) deriving (Eq, Ord, Functor, Foldable, Show)
 
 
-isEmpty :: Heap k a -> Bool
-isEmpty EmptyHeap = True
-isEmpty _ = False
+null :: Heap k a -> Bool
+null EmptyHeap = True
+null _ = False
 
 
 size :: Heap k a -> Int
@@ -25,7 +25,7 @@ EmptyHeap `union` t2 = t2
 t1 `union` EmptyHeap = t1
 t1@(Heap k1 xs1 l1 r1) `union` t2@(Heap k2 xs2 l2 r2)
   | k1 == k2 = Heap k1 (xs1 ++ xs2) (l2 `union` r2 `union` r1) l1
-  | k1 > k2 = Heap k1 xs1 (t2 `union` r1) l1
+  | k1 < k2 = Heap k1 xs1 (t2 `union` r1) l1
   | otherwise = Heap k2 xs2 (t1 `union` r2) l2
 
 
