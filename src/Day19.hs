@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Day19(day19) where
 
-import Utils
+import Utils hiding (NodeF)
 import Data.Map qualified as M
 
 
@@ -94,27 +94,29 @@ reduce (ix, _, c, x, _) rs
   | otherwise = rs
 
 
-data BF a r = LF a | NF a r r deriving (Functor)
+-- A recursive Binary Tree - to be fixed...
+data BTreeF a r = LeafF a | NodeF r r deriving (Functor)
 
 
 -- A bit tricky in the coalgebra because we have to take conditions out of the tree
-coalg :: (Workflows, Name, Ranges) -> BF Ranges (Workflows, Name, Ranges)
+-- Build up the tree from the map
+coalg :: (Workflows, Name, Ranges) -> BTreeF Ranges (Workflows, Name, Ranges)
 coalg (mp, name, ranges)
-  | name == "A" = LF ranges
-  | name == "R" = LF []
+  | name == "A" = LeafF ranges
+  | name == "R" = LeafF []
   | null cs = error "Yes, we have no conditions in coalg"
-  | length cs == 1 = NF ranges (mp, cname c, trueR) (mp, ow, falseR)
-  | otherwise = NF ranges (mp, cname c, trueR) (M.insert name (tail cs,ow) mp, name, falseR)
+  | length cs == 1 = NodeF (mp, cname c, trueR) (mp, ow, falseR)
+  | otherwise = NodeF (mp, cname c, trueR) (M.insert name (tail cs,ow) mp, name, falseR)
   where
     (cs, ow)  = mp M.! name
     c = head cs
     (trueR, falseR) = splitRange (head cs) ranges 
 
 
-alg :: BF Ranges Int -> Int
-alg (LF []) = 0 -- because product of an empty list is 1
-alg (LF rs) = product $ (\(l,h) -> h-l+1) <$> rs
-alg (NF _ l r) = l + r
+alg :: BTreeF Ranges Int -> Int
+alg (LeafF []) = 0 -- because product of an empty list is 1
+alg (LeafF rs) = product $ (\(l,h) -> h-l+1) <$> rs
+alg (NodeF l r) = l + r
 
 
 day19 :: IO ()
