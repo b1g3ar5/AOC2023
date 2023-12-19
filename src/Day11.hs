@@ -29,8 +29,8 @@ nSize :: Int
 nSize = 140
 
 
-bigManhattan :: Int -> [Coord] -> [(Coord, Coord)] -> [Int]
-bigManhattan k galaxies = (go  <$>)
+bigManhattan :: Int -> [Coord] -> [(Coord, Coord)] -> Int
+bigManhattan k galaxies = foldl (\acc p -> acc + go p) 0
   where
     baseC, baseR :: [Int]
     baseC = [0..(nSize-1)] \\ (fst <$> galaxies)
@@ -45,14 +45,15 @@ bigManhattan k galaxies = (go  <$>)
         newr2 = k * length (filter (r2>) baseR)
 
 
+
 day11 :: IO ()
 day11 = do
   ls <- getLines 11
   let galaxies = parse ls
       pairs = [(x,y) | !x <- galaxies, !y <- galaxies, x<y ]
 
-  putStrLn $ "Day11: part1: " ++ show (sum $ bigManhattan 1 galaxies pairs)
-  putStrLn $ "Day11: part2: " ++ show (sum $ bigManhattan 999999 galaxies pairs)
+  putStrLn $ "Day11: part1: " ++ show (bigManhattan 1 galaxies pairs)
+  putStrLn $ "Day11: part2: " ++ show (bigManhattan 999999 galaxies pairs)
   return ()
 
 

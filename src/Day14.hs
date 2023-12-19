@@ -1,52 +1,57 @@
 module Day14(day14) where
 
-import Utils (intercalate, sort, transpose, getLines)
-import Data.Map qualified as M
-import Data.List.Split qualified as S
+import Utils (getLines, fromJust)
+import Data.Trie as T (Trie, insert, lookup, member, empty) -- for the memoisation
+import Data.ByteString qualified as B
+import Data.Bits.Utils qualified as C
 
 
-tiltRt, tiltLt, tiltUp, tiltDn :: [String] -> [String]
+tiltRt, tiltLt, tiltUp, tiltDn :: [B.ByteString] -> [B.ByteString]
 tiltRt ls  = go <$> ls
   where
-    go :: String -> String
-    go s = intercalate "#" $ sort <$> S.splitOn "#" s
-tiltDn = transpose . tiltRt . transpose
-tiltLt = (reverse <$>). tiltRt . (reverse <$>)
+    go :: B.ByteString -> B.ByteString
+    go s = B.intercalate (B.pack $ C.c2w8 <$> "#") $ B.sort <$> B.split (C.c2w8 '#') s
+tiltDn = B.transpose . tiltRt . B.transpose
+tiltLt = (B.reverse <$>). tiltRt . (B.reverse <$>)
 tiltUp = reverse . tiltDn . reverse
 
 
-cycle1 :: [String] -> [String]
+cycle1 :: [B.ByteString] -> [B.ByteString]
 cycle1 = tiltRt . tiltDn . tiltLt . tiltUp
 
 
-score :: [String] -> Int
-score ls = sum $ go <$> zip [0..] ls
+score :: [B.ByteString] -> Int
+score ls = fst $ foldl go (0,0) ls
   where
     my = length ls
-    go :: (Int, String) -> Int
-    go(n, cs) = (my - n) * length (filter (=='O') cs)
+    go :: (Int, Int) ->  B.ByteString -> (Int, Int)
+    go (tot, n) cs = (tot + (my - n) * B.length (B.filter (== C.c2w8 'O') cs), n+1)
 
 
-run :: Int -> [String] -> Int
-run  = go M.empty
+run :: Int -> [B.ByteString] -> Int
+run  = go T.empty
   where
+    go :: T.Trie Int -> Int -> [B.ByteString] -> Int
     go seen n ls
       | n==0 = s
-      | ls `M.member` seen && n<cyc = go newSeen (n-1) $ cycle1 ls
-      | ls `M.member` seen = go newSeen (n-reps*cyc-1) $ cycle1 ls
+      | rep ls `T.member` seen && n < cyc = go newSeen (n-1) $ cycle1 ls
+      | rep ls `T.member` seen = go newSeen (n-reps*cyc-1) $ cycle1 ls
       | otherwise = go newSeen (n-1) $ cycle1 ls
       where
-        cyc = seen M.! ls - n
+        rep = B.concat -- the representation of the grid is just the lines concatenated
+        cyc = fromJust (rep ls `T.lookup` seen ) - n
         reps = n `div` cyc
         s = score ls
-        newSeen = M.insert ls n seen
+        newSeen = T.insert (rep ls) n seen
+
 
 day14 :: IO ()
 day14 = do
   ls <- getLines 14
 
-  putStrLn $ "Day14: part1: " ++ show (score $ tiltUp ls)
-  putStrLn $ "Day14: part2: " ++ show (run 1000000000 ls)
+  let bs = B.pack . (C.c2w8 <$>) <$> ls
+  putStrLn $ "Day14: part1: " ++ show (score $ tiltUp bs)
+  putStrLn $ "Day14: part2: " ++ show (run 1000000000 bs)
 
   return ()
 

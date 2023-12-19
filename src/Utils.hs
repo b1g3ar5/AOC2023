@@ -77,6 +77,8 @@ module Utils (
   , ana
   , cata
   , hylo
+  , TreeF(..)
+  , Tree
   , Fix(..)
 ) where
 
@@ -407,9 +409,8 @@ hylo f g = f . fmap (hylo f g) . g
 
 
 -- Functor that generates the rose tree
-data TreeF a = NodeF String [a]
-  deriving (Functor, Show)
+data TreeF a  r = NodeF a [r] deriving (Functor, Show)
 
 -- Rose tree
-type Tree = Fix TreeF
+type Tree a = Fix (TreeF a)
 

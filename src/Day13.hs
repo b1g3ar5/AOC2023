@@ -11,10 +11,6 @@ transpose :: Grid -> Grid
 transpose (g, c) = (S.map swap g, swap c)
 
 
-showGrid :: Grid -> String
-showGrid (g, (mx, my)) = intercalate "\n" $ (\y -> (\x -> if (x,y) `S.member` g then '#' else '.') <$> [0..(mx-1)]) <$> [0..(my-1)]
-
-
 parseGrid :: [String] -> Grid
 parseGrid css = (S.fromList $ concatMap (catMaybes . (\(y, cs) -> (\(x, c) -> if c=='#' then Just (x,y) else Nothing) <$> zip [0..] cs)) (zip [0..] css), (length $ css!!0, length css))
 

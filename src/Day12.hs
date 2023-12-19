@@ -1,35 +1,62 @@
 module Day12(day12) where
 
 import Utils (intercalate, getLines, wordsBy, bimap)
-import Data.List (unfoldr)
-import Data.Map (Map)
-import Data.Map qualified as M
-import Data.Function (fix)
-import Data.Binary qualified as B
-import qualified Data.Bits.Utils as B
-import Data.Bits ( Bits((.|.), shiftR, shiftL) )
-import Data.Bits.Utils ( c2w8 )
-import Memo qualified
+import Control.Monad.Memo
 
 
 parse :: String -> (String, [Int])
 parse s
   | null ws = ([], [])
-  | length ws < 2 = if head s ==' ' then ("", read <$> wordsBy (==',') (ws `ix` 0)) else (ws `ix` 0, [])
-  | otherwise = (ws `ix` 0, read <$> wordsBy (==',') (ws `ix` 1))
+  | length ws < 2 = if head s ==' ' then ("", read <$> wordsBy (==',') (ws !! 0)) else (ws !! 0, [])
+  | otherwise = (ws !! 0, read <$> wordsBy (==',') (ws !! 1))
   where
     ws = words s
 
-
-showSpring :: (String, [Int]) -> String
-showSpring (s, xs) = s ++ " " ++ intercalate "," (show <$> xs)
 
 parse2 :: String -> (String, [Int])
 parse2 s = bimap (intercalate "?" . replicate 5) (concat . replicate 5) $ parse s
 
 
+countM :: (MonadMemo (String, [Int]) Int m) => (String, [Int]) -> m Int
+countM ([], ss)  = if null ss then return 1 else return 0
+countM (cfg, []) = if '#' `elem` cfg then return 0 else return 1
+countM (cfg@(c:cs), s:ss)
+  | c == '.' = memo countM (cs, s:ss)
+  | c == '#' && (s <= length cfg) && ('.' `notElem` take s cfg) && (s == length cfg || cfg !! s /= '#' ) = memo countM (drop (s+1) cfg, ss)
+  | c == '?' = do 
+                x1 <- memo countM ('.':cs, s:ss)
+                x2 <- memo countM ('#':cs, s:ss)
+                return $ x1+x2
+  | otherwise = return 0
+
+
+evalCount :: (String, [Int]) -> Int
+evalCount = startEvalMemo . countM
+
+
+day12 :: IO ()
+day12 = do
+  ls <- getLines 12
+  let g1 = parse <$> ls
+      g2 = parse2 <$> ls
+
+  putStrLn $ "Day12: part1: " ++ show (sum $ evalCount <$> g1)
+  putStrLn $ "Day12: part2: " ++ show (sum $ evalCount <$> g2)
+
+  return ()
+
+
+
+
+{- 
+
+####################### GRAVEYARD #################################
+
+import Data.Map (Map)
+import Data.Map qualified as M
+import Data.Function (fix)
+
 countF :: ((String, [Int]) -> Int) -> (String, [Int]) -> Int
---countF _ ([], []) = 1
 countF _ ([], ss)  = if null ss then 1 else 0
 countF _ (cfg, []) = if '#' `elem` cfg then 0 else 1
 countF recurFn (cfg@(c:cs), s:ss)
@@ -38,14 +65,10 @@ countF recurFn (cfg@(c:cs), s:ss)
   | c == '?' = recurFn ('.':cs, s:ss ) + recurFn ('#':cs, s:ss)
   | otherwise = 0
 
-
-ix :: [a] -> Int -> a
-ix xs i
-  | i>(length xs-1) = error $ "i is too big: " ++ show i
-  | otherwise = xs !!i
-
 count :: (String, [Int]) -> Int
 count = fix countF
+
+
 
 type Cache = Map (String, [Int]) Int
 
@@ -74,97 +97,6 @@ count2 seen springs@(c:cs) scores@(s:ss)
       (hashCount, hashSeen) = count2 (M.insert ('.':cs, s:ss) dotCount dotSeen) ('#':cs) (s:ss)
 
 
-day12 :: IO ()
-day12 = do
-  ls <- getLines 12
-  let g1 = parse <$> ls
-      g2 = parse2 <$> ls
-
-  putStrLn $ "Day12: part1: " ++ show (sum $ count <$> g1) 
-  putStrLn $ "Day12: part2: " ++ show (sum $ fst . uncurry (count2 M.empty) <$> g2)
-
-  return ()
-
-
-
-{-
-
--- ############# GRAVE YARD  #############
-fib0 :: Integer -> Integer
-fib0 0 = 0
-fib0 1 = 1
-fib0 n = fib0 (n-1) + fib0 (n-2)
-
-
-
--- Remove the recursion
-fib1 :: (Integer -> Integer) -> Integer -> Integer
-fib1 f 0 = 0
-fib1 f 1 = 1
-fib1 f n = f (n-1) + f (n-2)
-
-
--- Build a tree
-fibTree :: Tree Integer
-fibTree = fmap (fib1 fastestFib) nats
-
-
--- Get the answer from the tree
-fastestFib :: Integer -> Integer
-fastestFib = index fibTree
-
-
-
--}
-
---import Memo2 qualified as M2
---import Numeric.Natural ( Natural )
---import Data.ByteString.Lazy qualified as B
---import Data.ByteString.Lazy.Char8 qualified as C
---import qualified Data.Bits.Utils as C
---import Data.Text.Encoding (encodeUtf8)
-
-{-
-unroll :: Integer -> [B.Word8]
-unroll = unfoldr step
-  where
-    step 0 = Nothing
-    step i = Just (fromIntegral i, i `shiftR` 8)
-
-
-roll :: [B.Word8] -> Integer
-roll   = foldr unstep 0
-  where
-    unstep b a = a `shiftL` 8 .|. fromIntegral b
-
-
-
-encode :: (String, [Int]) -> Integer
-encode si = roll $ c2w8 <$> showSpring si
-
-
-decode :: Integer -> (String, [Int])
-decode x = parse $ B.w82s $ unroll x
-
-countFI :: (Integer -> Int) -> Integer -> Int
-countFI f i = countF rf $ decode i
-  where
-    rf :: (String, [Int]) -> Int
-    rf si = f (encode si)
-
-
--- Build a tree
-countTree :: Memo.Tree Int
-countTree = fmap (countFI fastCount) Memo.nats
-
-
--- Get the answer from the tree
-fastCount :: Integer -> Int
-fastCount = Memo.index countTree
-
-
-count' :: (String, [Int]) -> Int
-count' ss = fastCount $ encode ss
 
 
 -}

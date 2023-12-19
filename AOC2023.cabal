@@ -71,7 +71,6 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -O2
   build-depends:
       MissingH
-    , PSQueue
     , Useful
     , array
     , async
@@ -83,8 +82,10 @@ library
     , data-fix
     , hashable
     , memoize
+    , monad-memo
     , mtl
     , parallel
+    , pqueue
     , recursion
     , recursion-schemes
     , search-algorithms
@@ -109,7 +110,6 @@ executable AOC2023-exe
   build-depends:
       AOC2023
     , MissingH
-    , PSQueue
     , Useful
     , array
     , async
@@ -121,8 +121,10 @@ executable AOC2023-exe
     , data-fix
     , hashable
     , memoize
+    , monad-memo
     , mtl
     , parallel
+    , pqueue
     , recursion
     , recursion-schemes
     , search-algorithms
@@ -148,7 +150,6 @@ test-suite AOC2023-test
   build-depends:
       AOC2023
     , MissingH
-    , PSQueue
     , Useful
     , array
     , async
@@ -160,8 +161,10 @@ test-suite AOC2023-test
     , data-fix
     , hashable
     , memoize
+    , monad-memo
     , mtl
     , parallel
+    , pqueue
     , recursion
     , recursion-schemes
     , search-algorithms

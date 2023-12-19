@@ -43,7 +43,8 @@ dependencies:
 - memoize
 - binary
 - parallel
-- PSQueue
+- pqueue
+- monad-memo
 
 default-extensions: GHC2021
 

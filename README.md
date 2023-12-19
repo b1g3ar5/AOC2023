@@ -2,12 +2,12 @@
 
 Advent of Code 2023 solutions in Haskell
 
-Day12 takes 1.3s - it's a memoisation
-Day14 takes 2.3s - but the code is pretty neat. All the time is in splitOn() from the Data.List.Split library
-Day16 takes 3.4s - a lot of routes through the grid and I can't think of a further easy optimisation other than parallelisation...
+Day12 takes 1.2s - it's a memoisation
+Day14 takes 0.7s - replaced the nap woth a trie, used bytestrings instead of strings...
+Day16 takes 1.5s - a lot of routes through the grid and I can't think of a further easy optimisation other than parallelisation...
+Day17 takes 6.5s - Dijkstra on 140*140 grid - could try a libray dijkstra and a-star...
 
-Total 8s as of Day 16
-
+Total 13s up to Day17 (real time)
 
 I tried parallelisation on Day16 but the time increased with 
 

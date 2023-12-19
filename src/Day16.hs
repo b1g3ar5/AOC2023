@@ -1,9 +1,10 @@
 module Day16(day16) where
 
 
-import Utils (dn, getLines, lt, rt, up, Coord, timeIt)
-import Data.Map (Map)
-import Data.Map qualified as M
+import Utils (dn, getLines, lt, rt, up, Coord, transpose)
+--import Data.Map (Map)
+--import Data.Map qualified as M
+import Data.Array.IArray (Array, amap, bounds, (!), listArray, elems)
 import Data.Set (Set)
 import Data.Set qualified as S
 import Control.Parallel.Strategies
@@ -21,8 +22,8 @@ parseCell '\\' = B
 parseCell c = E 
 
 
-parse :: [String] -> (Map Coord Cell, Int, Int)
-parse css = (M.fromList $ concatMap (\(y, cs) -> (\(x,c) -> ((x,y), parseCell c)) <$> zip [0..] cs ) $ zip [0..] css, length $ css!!0, length css)
+parse :: [String] -> Array Coord Cell
+parse xs = amap parseCell $ listArray ((0, 0), (length xs - 1, length (head xs) - 1)) (concat $ transpose xs)
 
 
 reflection :: (Direction, Cell) -> [Direction]
@@ -37,16 +38,16 @@ reflection ((x,y), F) = [(-y,-x)]
 reflection (d, E) = [d]
 
 
-run :: (Map Coord Cell, Int, Int) -> (Coord, Direction) -> Set (Coord, Direction)
-run (g, mx, my) (p,d) = go S.empty (p, d)
+run :: Array Coord Cell -> (Coord, Direction) -> Set (Coord, Direction)
+run g (p,d) = go S.empty (p, d)
   where
     go :: Set (Coord, Direction) -> (Coord, Direction) -> Set (Coord, Direction)
     go acc (pos, dir)
       | (pos, dir) `S.member` acc = acc
-      | not (inBounds pos mx my) = acc
+      | not (inBounds pos) = acc
       | otherwise = foldl (go . S.insert (pos, dir)) acc $ zip newCoords newDirections
       where
-        cell = g M.! pos
+        cell = g ! pos
         newDirections = reflection (dir, cell)
         newCoords = (pos +) <$>  newDirections
 
@@ -61,19 +62,17 @@ setOff = ((\y -> ((0,y), rt)) <$> [0..size])
          ++ ((\x -> ((x,size), up)) <$> [0..size])
 
 
-inBounds :: Coord -> Int -> Int -> Bool
-inBounds (x,y) mx my = x<mx && y<my && x>=0 && y>=0
+inBounds :: Coord -> Bool
+inBounds (x,y) = x<=size && y<=size && x>=0 && y>=0
 
 
 day16 :: IO ()
 day16 = do
   ss <- getLines 16
   let g = parse ss
-      --xs1 = fmap (run g) setOff
-      xs2 = parMap rpar (run g) setOff
+      xs' = parMap rpar (run g) setOff
 
   putStrLn $ "Day16: part1: " ++ show (S.size $ S.map fst $ run g ((0,0), rt))
-  --timeIt $ putStrLn $ "Day16: part2: " ++ show (maximum $ S.size . S.map fst <$> xs1) 
-  timeIt $ putStrLn $ "Day16: part2: " ++ show (maximum $ S.size . S.map fst <$> xs2) 
+  putStrLn $ "Day16: part2: " ++ show (maximum $ S.size . S.map fst <$> xs') 
 
   return ()
