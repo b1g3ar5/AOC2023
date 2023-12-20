@@ -14,8 +14,6 @@ type Workflows = M.Map Name ([Condition], Name)
 type Range = (Int, Int) -- range of a property
 type Ranges = [Range] -- ranges of all the poreperties
 
-emptyCondition :: Condition
-emptyCondition = (0, const True, "", 0, "True")
 
 -- For part 1
 apply :: Workflows -> Item -> String
