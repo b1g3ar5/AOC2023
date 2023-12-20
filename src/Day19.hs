@@ -5,6 +5,12 @@ import Utils (getLines, hylo, splitOn)
 import Data.Map qualified as M
 
 
+-- I love it when the solution involves a hylomorphism - especially when it is easy in 2 differn ways..
+-- Best problem this year.
+
+-- coalg' and alg' are great
+
+
 -- Over doing the types here...
 type Name = String
 type AttributeIx = Int
