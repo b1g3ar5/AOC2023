@@ -3,7 +3,7 @@
 module Day17(day17) where
 
 import Prelude hiding (null)
-import Utils ( transpose, Coord, getLines, neighbourCoords4, rt, dn)
+import Utils (transpose, Coord, getLines, neighbourCoords4, rt, dn)
 import Data.PQueue.Min qualified as Q
 import qualified Data.Set as S
 import Data.Array.Unboxed qualified as A
@@ -14,6 +14,8 @@ type Grid = A.UArray Coord Loss
 type State = (Coord, Coord, Int) -- position, direction, count
 
 
+-- REMEBER to transpose the stings for (x,y) coordinate
+-- Without the transpose its (row, col)
 parse :: [String] -> Grid 
 parse xs = A.amap (read . (:[])) $ A.listArray ((0, 0), (length xs - 1, length (head xs) - 1)) (concat $ transpose xs)
 
@@ -64,8 +66,8 @@ day17 = do
   xs <- getLines 17
   let g = parse xs
 
+  putStrLn $ "Day17: part2: " ++ show (solve g (nextStates (0, 3) g) (finish 0 g))
+  putStrLn $ "Day17: part2: " ++ show (solve g (nextStates (4, 10) g) (finish 0 g))
 
-  putStrLn $ "Day17: part2:Array " ++ show (solve g (nextStates (0, 3) g) (finish 0 g))
-  putStrLn $ "Day17: part2:Array " ++ show (solve g (nextStates (4, 10) g) (finish 0 g))
 
   return ()

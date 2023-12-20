@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
 module Day19(day19) where
 
-import Utils hiding (NodeF)
+import Utils (getLines, hylo, splitOn)
 import Data.Map qualified as M
 
 
@@ -14,6 +14,8 @@ type Workflows = M.Map Name ([Condition], Name)
 type Range = (Int, Int) -- range of a property
 type Ranges = [Range] -- ranges of all the poreperties
 
+emptyCondition :: Condition
+emptyCondition = (0, const True, "", 0, "True")
 
 -- For part 1
 apply :: Workflows -> Item -> String
@@ -29,29 +31,17 @@ apply wfs i = go "in"
           gg ((aa, op, _, _, nm):cs) =  if op (i !! aa) then nm else gg cs
 
 
-
--- Reduce a set of ranges by a condition (only one gets reduced)
-reduce :: Condition -> [(Int, Int)] -> [(Int, Int)]
-reduce (ix, _, c, x, _) rs
-  | c==">" = (\(i,(l,h)) ->  if i==ix then (max l (x+1), h) else (l,h)) <$> zip [0..] rs
-  | c==">=" = (\(i,(l,h)) -> if i==ix then (max l x, h) else (l,h)) <$> zip [0..] rs
-  | c=="<" = (\(i,(l,h)) ->  if i==ix then (l, min (x-1) h) else (l,h)) <$> zip [0..] rs
-  | c=="<=" = (\(i,(l,h)) -> if i==ix then (l, min x h) else (l,h)) <$> zip [0..] rs
-  | otherwise = rs
-
-
 -- NullF for 'R', LeafF for 'A', NodeF for the rest
 data BTreeF a r = NullF | LeafF a | NodeF r r deriving (Functor)
+data BTreeF' a r = NullF' | LeafF' | NodeF' a r r deriving (Functor)
 
 
--- A bit tricky in the coalgebra because we have to take conditions out of the tree
--- Build up the tree from the map
+-- Build up the tree from the map.
 coalg :: (Workflows, Name, Ranges) -> BTreeF Ranges (Workflows, Name, Ranges)
 coalg (mp, name, ranges)
   | name == "R" = NullF
   | name == "A" = LeafF ranges
-  | null cs = error "Yes, we have no conditions in coalg"
-  | length cs == 1 = NodeF (mp, cname c, trueR) (mp, ow, falseR) -- move on to the otherwise workflow
+  | length cs == 1 = NodeF (mp, cname c, trueR) (mp, ow, falseR)
   | otherwise = NodeF (mp, cname c, trueR) (M.insert name (tail cs,ow) mp, name, falseR)
   where
     (cs, ow)  = mp M.! name
@@ -65,6 +55,41 @@ alg (LeafF rs) = product $ (\(l,h) -> h-l+1) <$> rs
 alg (NodeF l r) = l + r
 
 
+coalg' :: (Workflows, Name) -> BTreeF' Condition (Workflows, Name)
+coalg' (mp, name)
+  | name == "R" = NullF'
+  | name == "A" = LeafF'
+  | length cs == 1 = NodeF' c (mp, cname c) (mp, ow)
+  | otherwise = NodeF' c (mp, cname c) (M.insert name (tail cs,ow) mp, name)
+  where
+    (cs, ow)  = mp M.! name
+    c = head cs -- There is a null cs check!
+
+
+alg' :: BTreeF' Condition (Ranges -> Int) -> (Ranges -> Int)
+alg' NullF' = const 0
+alg' LeafF' = score
+alg' (NodeF' c l r) = \rs -> l (reduce c rs) + r (reduce (opposite c) rs)
+
+
+splitRange :: Condition -> Ranges -> (Ranges, Ranges)
+splitRange c rs = (reduce c rs, reduce (opposite c) rs)
+
+
+-- Reduce a set of ranges by a condition (only one gets reduced)
+reduce :: Condition -> [(Int, Int)] -> [(Int, Int)]
+reduce (ix, _, c, x, _) rs
+  | c==">" = (\(i,(l,h)) ->  if i==ix then (max l (x+1), h) else (l,h)) <$> zip [0..] rs
+  | c==">=" = (\(i,(l,h)) -> if i==ix then (max l x, h) else (l,h)) <$> zip [0..] rs
+  | c=="<" = (\(i,(l,h)) ->  if i==ix then (l, min (x-1) h) else (l,h)) <$> zip [0..] rs
+  | c=="<=" = (\(i,(l,h)) -> if i==ix then (l, min x h) else (l,h)) <$> zip [0..] rs
+  | otherwise = rs
+
+
+score :: Ranges -> Int
+score rs = product $ (\(l,h) -> h-l+1) <$> rs
+
+
 day19 :: IO ()
 day19 = do
   ss <- getLines 19
@@ -74,14 +99,13 @@ day19 = do
 
   putStrLn $ "Day19: part1: " ++ show (sum $ sum . fst <$> filter ((=="A"). snd) ((\p -> (p, apply workflows p)) <$> ps))
   putStrLn $ "Day19: part2: " ++ show (hylo alg coalg (workflows, "in", start))
+  putStrLn $ "Day19: part2: " ++ show (hylo alg' coalg' (workflows, "in") start)
   
   return ()
 
 
--- THE PARSING ---
+-- THE (COMPLICATED) PARSING ---
 
-splitRange :: Condition -> Ranges -> (Ranges, Ranges)
-splitRange c rs = (reduce c rs, reduce (opposite c) rs)
 
 
 cname :: Condition -> Name
