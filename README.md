@@ -11,7 +11,7 @@ Day17 takes 6.5s - Dijkstra on 140*140 grid - I tried library dijkstra and aStar
 
 Total 10s up to Day19 (real time)
 
-Day 19 Hylomorphism!!!
+Day 19 Hylomorphism in 2 different ways. 
 
 
 ### Installation
@@ -78,7 +78,10 @@ Day18: part2: 39194
 Day18: part2: 78242031808225
 Day19: part1: 397134
 Day19: part2: 127517902575337
+Day19: part2: 127517902575337
+Day20: part1: 944750144
+Day20: part1: 222718819437131
 
-real    0m10.393s
-user    0m17.900s
-sys     0m0.720s
+real    0m10.035s
+user    0m16.845s
+sys     0m0.736s

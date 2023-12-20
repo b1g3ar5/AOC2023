@@ -34,7 +34,7 @@ data BTreeF a r = NullF | LeafF a | NodeF r r deriving (Functor)
 data BTreeF' a r = NullF' | LeafF' | NodeF' a r r deriving (Functor)
 
 
--- Build up the tree from the map.
+-- Build up the tree from the map - put the vlid range at the leaves, nothing at the nodes
 coalg :: (Workflows, Name, Ranges) -> BTreeF Ranges (Workflows, Name, Ranges)
 coalg (mp, name, ranges)
   | name == "R" = NullF
@@ -43,16 +43,17 @@ coalg (mp, name, ranges)
   | otherwise = NodeF (mp, cname c, trueR) (M.insert name (tail cs,ow) mp, name, falseR)
   where
     (cs, ow)  = mp M.! name
-    c = head cs -- There is a null cs check!
-    (trueR, falseR) = splitRange (head cs) ranges 
+    c = head cs -- There is a null cs check?
+    (trueR, falseR) = splitRange c ranges 
 
 
 alg :: BTreeF Ranges Int -> Int
 alg NullF = 0 
-alg (LeafF rs) = product $ (\(l,h) -> h-l+1) <$> rs
+alg (LeafF rs) = score rs
 alg (NodeF l r) = l + r
 
 
+-- Put the conditions at the nodes nothing at the leaves
 coalg' :: (Workflows, Name) -> BTreeF' Condition (Workflows, Name)
 coalg' (mp, name)
   | name == "R" = NullF'
@@ -61,9 +62,10 @@ coalg' (mp, name)
   | otherwise = NodeF' c (mp, cname c) (M.insert name (tail cs,ow) mp, name)
   where
     (cs, ow)  = mp M.! name
-    c = head cs -- There is a null cs check!
+    c = head cs -- There is a null cs check?
 
 
+-- reduce the ranges 
 alg' :: BTreeF' Condition (Ranges -> Int) -> (Ranges -> Int)
 alg' NullF' = const 0
 alg' LeafF' = score
@@ -75,7 +77,7 @@ splitRange c rs = (reduce c rs, reduce (opposite c) rs)
 
 
 -- Reduce a set of ranges by a condition (only one gets reduced)
-reduce :: Condition -> [(Int, Int)] -> [(Int, Int)]
+reduce :: Condition -> Ranges -> Ranges
 reduce (ix, _, c, x, _) rs
   | c==">" = (\(i,(l,h)) ->  if i==ix then (max l (x+1), h) else (l,h)) <$> zip [0..] rs
   | c==">=" = (\(i,(l,h)) -> if i==ix then (max l x, h) else (l,h)) <$> zip [0..] rs
@@ -96,14 +98,13 @@ day19 = do
       start = replicate 4 (1,4000)
 
   putStrLn $ "Day19: part1: " ++ show (sum $ sum . fst <$> filter ((=="A"). snd) ((\p -> (p, apply workflows p)) <$> ps))
-  putStrLn $ "Day19: part2: " ++ show (hylo alg coalg (workflows, "in", start))
-  putStrLn $ "Day19: part2: " ++ show (hylo alg' coalg' (workflows, "in") start)
+  putStrLn $ "Day19: part2:hylo1 " ++ show (hylo alg coalg (workflows, "in", start))
+  putStrLn $ "Day19: part2:hylo2 " ++ show (hylo alg' coalg' (workflows, "in") start)
   
   return ()
 
 
 -- THE (COMPLICATED) PARSING ---
-
 
 
 cname :: Condition -> Name

@@ -6,6 +6,9 @@ import Data.Map qualified as M
 import Data.List.Split (splitOn)
 
 
+-- Not too keen on this problem, too much like real life - lots of faffing about with types and
+-- an unsatisfying solution to the second part that relys on manual inspection of the intut...
+
 type Name = String
 type Modules = Map Name Module
 data Module = Flipflop Bool [Name] | Conjunction (Map Name PulseType) [Name] | Broadcast [Name] deriving (Eq, Show)
@@ -47,7 +50,7 @@ postProcess mp = foldl (\acc (name, c@(Conjunction _ ns)) -> M.insert name (Conj
     getSenders :: Name -> [Name]
     getSenders c = fst <$> filter (sendsTo c) (M.toList mp)
     sendsTo :: Name -> (Name, Module) -> Bool
-    sendsTo c (n,e) = case e of
+    sendsTo c (_,e) = case e of
                         Flipflop _ ns -> c `elem` ns
                         Conjunction _ ns -> c `elem` ns
                         Broadcast ns -> c `elem` ns
