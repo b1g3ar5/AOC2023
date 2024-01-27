@@ -60,6 +60,7 @@ library
       Search
       Trie
       Utils
+      V6
   other-modules:
       Paths_AOC2023
   autogen-modules:
@@ -72,6 +73,7 @@ library
   build-depends:
       MissingH
     , Useful
+    , ad
     , array
     , async
     , base >=4.7 && <5
@@ -81,11 +83,14 @@ library
     , containers
     , data-fix
     , hashable
+    , hmatrix
+    , linear
     , memoize
     , monad-memo
     , mtl
     , parallel
     , pqueue
+    , random
     , recursion
     , recursion-schemes
     , search-algorithms
@@ -111,6 +116,7 @@ executable AOC2023-exe
       AOC2023
     , MissingH
     , Useful
+    , ad
     , array
     , async
     , base >=4.7 && <5
@@ -120,11 +126,14 @@ executable AOC2023-exe
     , containers
     , data-fix
     , hashable
+    , hmatrix
+    , linear
     , memoize
     , monad-memo
     , mtl
     , parallel
     , pqueue
+    , random
     , recursion
     , recursion-schemes
     , search-algorithms
@@ -151,6 +160,7 @@ test-suite AOC2023-test
       AOC2023
     , MissingH
     , Useful
+    , ad
     , array
     , async
     , base >=4.7 && <5
@@ -160,11 +170,14 @@ test-suite AOC2023-test
     , containers
     , data-fix
     , hashable
+    , hmatrix
+    , linear
     , memoize
     , monad-memo
     , mtl
     , parallel
     , pqueue
+    , random
     , recursion
     , recursion-schemes
     , search-algorithms

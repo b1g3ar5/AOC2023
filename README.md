@@ -9,9 +9,19 @@ Day17 takes 6.5s - Dijkstra on 140*140 grid - I tried library dijkstra and aStar
                    lots of time in extractBin from the PQueue library - 30 million calls
 
 
-Total 10s up to Day19 (real time)
+Total 10s up to Day20 (real time)
 
 Day 19 Hylomorphism in 2 different ways. 
+
+After day 20 it gets a lot slower
+
+Day21 = 27s
+Day22 = 13s
+Day23 = 6s
+Day25 = 7s
+
+
+So, about a minute for the lot. It's unlikely that I wll do any more optimisation...
 
 
 ### Installation
@@ -77,11 +87,20 @@ Day17: part2: 1201
 Day18: part2: 39194
 Day18: part2: 78242031808225
 Day19: part1: 397134
-Day19: part2: 127517902575337
-Day19: part2: 127517902575337
+Day19: part2:hylo1 127517902575337
+Day19: part2:hylo2 127517902575337
 Day20: part1: 944750144
 Day20: part1: 222718819437131
+Day21: part1: 3562
+Day21: part2: 592723929260582
+Day22: part2: 505
+Day22: part2: 71002
+Day23: part1: 2186
+Day23: part1: 6802
+Day24: part1: 18098
+Day24: part2: 886858737029295 % 1
+Day25: 527790
 
-real    0m10.035s
-user    0m16.845s
-sys     0m0.736s
+real    1m6.210s
+user    1m37.842s
+sys     0m5.554s

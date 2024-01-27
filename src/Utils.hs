@@ -78,7 +78,9 @@ module Utils (
   , cata
   , hylo
   , TreeF(..)
+  , TreeF'(..)
   , Tree
+  , ForestF(..)
   , Fix(..)
 ) where
 
@@ -216,6 +218,7 @@ type Coord = (Int, Int)
 type Coord3 = (Int, Int, Int)
 
 instance {-# OVERLAPPING #-} Hashable Coord where
+
 
 instance Num Coord where
   {-# INLINE (+) #-}
@@ -362,7 +365,7 @@ crossProduct (v1,v2,v3) (w1,w2,w3) = sum $ (\i -> sum $ (\j -> sum $ (\k -> scal
 
 
 floodFill :: Ord a => a -> (a -> [a]) -> [a]
-floodFill start getNext = go Set.empty (Q.fromList [start]) --(Seq.singleton start)
+floodFill start getNext = go Set.empty (Q.fromList [start])
   where
     go !seen = \case
                 Q.Empty -> []
@@ -410,7 +413,9 @@ hylo f g = f . fmap (hylo f g) . g
 
 -- Functor that generates the rose tree
 data TreeF a  r = NodeF a [r] deriving (Functor, Show)
+data TreeF' a  r = LeafF' | NodeF' a [r] deriving (Functor, Show)
 
 -- Rose tree
 type Tree a = Fix (TreeF a)
 
+newtype ForestF a r = ForestF [TreeF a r]

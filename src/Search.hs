@@ -112,13 +112,13 @@ initBFSState' vs = BS' (HM.fromList (map (,0) vs)) HM.empty (Seq.fromList vs)
 
 --bfsSlow :: forall v. (Eq v, Hashable v) => [v] -> (v -> [v]) -> (v -> Bool) -> Result v
 bfsSlow :: (Eq v, Hashable v) => [v] -> (v -> [v]) -> (v -> Bool) -> Result v
-bfsSlow vs next goal = toResult $ exhaust bfsStep (initBFSState' vs)
+bfsSlow pipeline next finish = toResult $ exhaust bfsStep (initBFSState' pipeline)
   where
     toResult BS'{..} = Result (`HM.lookup` level') (`HM.lookup` parent')
     bfsStep st@BS'{..} = case Seq.viewl queue' of
       EmptyL -> Nothing
       v :< q'
-        | goal v    -> Nothing
+        | finish v    -> Nothing
         | otherwise -> Just $ foldl (upd v) (st{queue'=q'}) (filter (not . (`HM.member` level')) (next v))
         -- | otherwise -> v >$> next >>> filter (not . (`HM.member` level')) >>>
                        --foldl (upd v) (st{queue'=q'}) >>> Just

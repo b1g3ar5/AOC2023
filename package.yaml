@@ -45,6 +45,10 @@ dependencies:
 - parallel
 - pqueue
 - monad-memo
+- linear
+- ad
+- hmatrix
+- random
 
 default-extensions: GHC2021
 
