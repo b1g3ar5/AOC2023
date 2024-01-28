@@ -13,10 +13,9 @@ positions :: Int -> Coord -> S.Set Coord -> S.Set Coord
 positions steps start mp = go 0 (S.singleton start)
   where
     go n cs
-      | n==steps = cs
+      | n == steps = cs
       | otherwise = go (n+1) ns
       where
-        --ns = S.filter (\(x,y) -> (x `mod` 262,y `mod` 262) `S.member` mp) $ S.unions $ S.map (S.fromList . neighbours4) cs
         ns = S.filter (\(x,y) -> (x `mod` 131, y `mod` 131) `S.member` mp) $ S.unions $ S.map (S.fromList . neighbours4) cs
 
 

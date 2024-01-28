@@ -60,7 +60,6 @@ library
       Search
       Trie
       Utils
-      V6
   other-modules:
       Paths_AOC2023
   autogen-modules:

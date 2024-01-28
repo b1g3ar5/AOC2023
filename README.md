@@ -51,56 +51,107 @@ stack exec --profile -- AOC2023-exe +RTS -p
 ### Current output
 
 Day1: part1: 56042
+
 Day1: part2: 55358
+
 Day2: part1: 2377
+
 Day2: part2: 71220
+
 Day3: part1: 533784
+
 Day3: part2: 78826761
+
 Day4: part1: 26218
+
 Day4: part2: 9997537
+
 Day5: part1: 662197086
+
 Day5: part2: 52510809
+
 Day6: part1: 771628
+
 Day6: part2: 27363861
+
 Day7: part1: 256448566
+
 Day7: part2: 254412181
+
 Day8: part1: 17873
+
 Day8: part2: 15746133679061
+
 Day9: part1: 1715351481
+
 Day9: part2: 1043
+
 Day10: part1: 6613
+
 Day10: part2: 511
+
 Day11: part1: 10313550
+
 Day11: part2: 611998089572
+
 Day12: part1: 7402
+
 Day12: part2: 3384337640277
+
 Day13: part2: 36015
+
 Day13: part2: 35335
+
 Day14: part1: 108918
+
 Day14: part2: 100310
+
 Day15: part1: 503487
+
 Day15: part2: 261505
+
 Day16: part1: 7242
+
 Day16: part2: 7572
+
 Day17: part2: 1039
+
 Day17: part2: 1201
+
 Day18: part2: 39194
+
 Day18: part2: 78242031808225
+
 Day19: part1: 397134
+
 Day19: part2:hylo1 127517902575337
+
 Day19: part2:hylo2 127517902575337
+
 Day20: part1: 944750144
+
 Day20: part1: 222718819437131
+
 Day21: part1: 3562
+
 Day21: part2: 592723929260582
+
 Day22: part2: 505
+
 Day22: part2: 71002
+
 Day23: part1: 2186
+
 Day23: part1: 6802
+
 Day24: part1: 18098
+
 Day24: part2: 886858737029295 % 1
+
 Day25: 527790
 
 real    1m6.210s
+
 user    1m37.842s
+
 sys     0m5.554s
