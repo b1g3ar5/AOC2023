@@ -265,6 +265,7 @@ antiTurn :: Coord -> Coord
 antiTurn (x, y) = (y, -x)
 
 
+{-# INLINE neighbourCoords4 #-}
 neighbourCoords4 :: [Coord]
 neighbourCoords4 = [(1,0), (-1,0), (0,1), (0,-1)]
 
@@ -276,6 +277,7 @@ neighbourCoords8 :: [Coord]
 neighbourCoords8 = [(-1, -1),(0, -1),(1, -1), (1, 0),(1, 1),(0, 1),(-1, 1),(-1, 0)]
 
 
+{-# INLINE neighbours4 #-}
 neighbours4 :: Coord -> [Coord]
 neighbours4 c = neighbourCoords4 `at` c
 
@@ -293,10 +295,10 @@ nextTo8 p q = p `elem` neighbours8 q
 
 {-# INLINE at #-}
 at :: [Coord] -> Coord -> [Coord]
-coords `at` origin = map (+ origin) coords
+coords `at` origin = (+ origin) <$> coords
 
 at3 :: [Coord3] -> Coord3 -> [Coord3]
-coords `at3` origin = map (+ origin) coords
+coords `at3` origin = (+ origin) <$> coords
 
 
 -- All coords in a grid in (x, y) (col, row) order
